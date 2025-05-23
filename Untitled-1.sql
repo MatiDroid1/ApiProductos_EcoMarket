@@ -1,0 +1,12 @@
+select * from CDB_PDBS;
+
+CONNECT matidroid/matidroidde AS SYSDBA;
+CREATE USER desa_procesos
+IDENTIFIED BY "Desa_proc.234"
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA UNLIMITED ON users;
+GRANT CREATE SESSION TO desa_procesos;
+GRANT RESOURCE TO desa_procesos;
+ALTER USER desa_procesos DEFAULT ROLE "RESOURCE";
+
