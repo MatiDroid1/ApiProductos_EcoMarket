@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.productos.duoc.cl.productos.model.Producto;
+// import com.productos.duoc.cl.productos.services.ProductServiceFaker;
+import com.productos.duoc.cl.productos.services.ProductoFakerService;
 import com.productos.duoc.cl.productos.services.ProductoService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,6 +82,18 @@ public ResponseEntity<?> modificarProducto(@PathVariable Long id, @RequestBody P
         return ResponseEntity.status(500).body("Error al actualizar producto");
     }
 }
+
+private final ProductoFakerService productoFakerService;
+
+    public ProductoController(ProductoFakerService productoFakerService) {
+        this.productoFakerService = productoFakerService;
+    }
+
+    @PostMapping("/faker")
+    public ResponseEntity<List<Producto>> crearProductosFaker(@RequestParam(defaultValue = "10") int cantidad) {
+        List<Producto> productos = productoFakerService.generarYGuardarProductos(cantidad);
+        return ResponseEntity.status(201).body(productos);
+    }
 
     
 }

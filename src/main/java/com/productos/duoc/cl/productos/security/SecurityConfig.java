@@ -16,13 +16,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            
-            .authorizeHttpRequests(authz -> authz
-                .anyRequest().authenticated()
-                
-            )
-            .addFilterBefore(new ApiKeyFilter(apiKey), UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/v1/productos/faker**").permitAll() // ← permite sin apiKey
+                        .anyRequest().authenticated())
+                .addFilterBefore(new ApiKeyFilter(apiKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
