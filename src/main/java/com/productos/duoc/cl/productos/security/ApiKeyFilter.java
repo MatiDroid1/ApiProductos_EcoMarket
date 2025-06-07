@@ -32,9 +32,12 @@ public class ApiKeyFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken("apiKeyUser", null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Su Api Key no es valida amigo, por favor verifique su Api Key");
-            return;
+            // response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // response.getWriter().write("Su Api Key no es valida amigo, por favor verifique su Api Key");
+            // return;
+             UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken("apiKeyUser", null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);

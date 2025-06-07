@@ -1,0 +1,4 @@
+{
+  "persistAuthorization": true,
+  "requestInterceptor": "function(req) { req.headers['x-api-key'] = 'ecomarket1554'; return req; }"
+}

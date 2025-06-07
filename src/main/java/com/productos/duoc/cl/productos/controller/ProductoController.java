@@ -13,6 +13,13 @@ import com.productos.duoc.cl.productos.model.Producto;
 import com.productos.duoc.cl.productos.services.ProductoFakerService;
 import com.productos.duoc.cl.productos.services.ProductoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +30,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/productos")
+@Tag(name = "Productos", description = "Api para gestionar productos de EcoMarket")
 public class ProductoController {
     @Autowired
     private ProductoService ps; 
 
+
     @GetMapping
+    @Operation(summary = "Productos", description = "Operación que lista todos los productos")
+    //
+    @ApiResponses(value = {
+    @ApiResponse(
+        responseCode = "200",
+        description = "Se listaron correctamente todos los productos.",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Producto.class)
+        )
+    ),
+    @ApiResponse(
+        responseCode = "404",
+        description = "No se encontraron productos.",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(type = "string", example = "no hay datos")
+        )
+    ),
+    @ApiResponse(
+        responseCode = "500",
+        description = "Error al retornar la lista de productos.",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(type = "string", example = "Error interno del servidor")
+        )
+    )
+})
+
     public ResponseEntity <List<Producto>> listarProductos(){
         List<Producto> productos = ps.listarTodos();
         if(productos.isEmpty()){
