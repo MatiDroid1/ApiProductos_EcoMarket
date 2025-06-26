@@ -12,21 +12,14 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @Configuration
 public class SwaggerConfig {
 
-   @Bean
-    public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "apiKeyAuth";
-
-        // Agrega el esquema de seguridad
-        OpenAPI openAPI = new OpenAPI()
-            .info(new Info().title("API Productos de EcoMarket").version("1.0"))
-            .components(new Components()
-                .addSecuritySchemes(securitySchemeName,
-                    new SecurityScheme()
-                        .name("x-api-key") // <-- nombre del header que tu filtro espera
-                        .type(SecurityScheme.Type.APIKEY)
-                        .in(SecurityScheme.In.HEADER)))
-            .addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
-
-        return openAPI;
-    }
+    @Bean
+public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .components(new Components()
+            .addSecuritySchemes("ApiKeyAuth", new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name("X-API-KEY")))
+        .addSecurityItem(new SecurityRequirement().addList("ApiKeyAuth"));
+}
 }

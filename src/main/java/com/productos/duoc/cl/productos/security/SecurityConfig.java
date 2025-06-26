@@ -18,8 +18,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/productos/faker**").permitAll() // ← permite sin apiKey
-                        .anyRequest().authenticated())
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/index.html")
+                        .permitAll()
+
+                        .anyRequest().authenticated() // Lo demás sí requiere API Key
+                )
                 .addFilterBefore(new ApiKeyFilter(apiKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -14,6 +14,9 @@ import com.productos.duoc.cl.productos.services.ProductoFakerService;
 import com.productos.duoc.cl.productos.services.ProductoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,101 +30,88 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/api/v1/productos")
 @Tag(name = "Productos", description = "Api para gestionar productos de EcoMarket")
 public class ProductoController {
     @Autowired
-    private ProductoService ps; 
-
+    private ProductoService ps;
 
     @GetMapping
     @Operation(summary = "Productos", description = "Operación que lista todos los productos")
     //
     @ApiResponses(value = {
-    @ApiResponse(
-        responseCode = "200",
-        description = "Se listaron correctamente todos los productos.",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = Producto.class)
-        )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "No se encontraron productos.",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(type = "string", example = "no hay datos")
-        )
-    ),
-    @ApiResponse(
-        responseCode = "500",
-        description = "Error al retornar la lista de productos.",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(type = "string", example = "Error interno del servidor")
-        )
-    )
-})
+            @ApiResponse(responseCode = "200", description = "Se listaron correctamente todos los productos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Producto.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron productos.", content = @Content(mediaType = "application/json", schema = @Schema(type = "string", example = "no hay datos"))),
+            @ApiResponse(responseCode = "500", description = "Error al retornar la lista de productos.", content = @Content(mediaType = "application/json", schema = @Schema(type = "string", example = "Error interno del servidor")))
+    })
 
-    public ResponseEntity <List<Producto>> listarProductos(){
+    public ResponseEntity<List<Producto>> listarProductos() {
         List<Producto> productos = ps.listarTodos();
-        if(productos.isEmpty()){
+        if (productos.isEmpty()) {
             return ResponseEntity.noContent().build();
-        }else{
+        } else {
             return ResponseEntity.ok(productos);
         }
     }
 
+    // endpoint para documentar la venta
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id){
-        if(id == 0){
+    @Operation(summary = "Buscar Producto", description = "Operación que busca un producto por su id")
+    @Parameters(value = {
+        @Parameter(name = "id", description = "id de producto que se buscará", in = ParameterIn.PATH, required = true)
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se encontro el producto.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Producto.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontró el producto.", content = @Content(mediaType = "application/json", schema = @Schema(type = "string", example = "no hay datos"))),
+            @ApiResponse(responseCode = "500", description = "Error al retornar el producto buscado", content = @Content(mediaType = "application/json", schema = @Schema(type = "string", example = "Error interno del servidor")))
+    })
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        if (id == 0) {
             return listarProductos();
         }
-            Producto prod = ps.buscarporID(id);
-            if(prod == null){
-                return ResponseEntity.status(404).body("Producto no encontrado con id "+id);
-            }
-            return ResponseEntity.ok(prod);
-        
+        Producto prod = ps.buscarporID(id);
+        if (prod == null) {
+            return ResponseEntity.status(404).body("Producto no encontrado con id " + id);
+        }
+        return ResponseEntity.ok(prod);
+
     }
 
     @PostMapping()
-    public ResponseEntity<?> crearProducto(@RequestBody Producto producto){
-        try{
+    public ResponseEntity<?> crearProducto(@RequestBody Producto producto) {
+        try {
             ps.guardarProd(producto);
             return ResponseEntity.status(201).body("Producto ingresado");
-        }catch(Exception ex){
-            return ResponseEntity.status(500).body("Producto no Ingresado, problema: "+ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Producto no Ingresado, problema: " + ex.getMessage());
         }
     }
 
- @PutMapping("/{id}")
-public ResponseEntity<?> modificarProducto(@PathVariable Long id, @RequestBody Producto producto) {
-    try {
-        Producto productoExistente = ps.buscarporID(id);
-        if (productoExistente == null) {
-            return ResponseEntity.status(404).body("Producto no encontrado");
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modificarProducto(@PathVariable Long id, @RequestBody Producto producto) {
+        try {
+            Producto productoExistente = ps.buscarporID(id);
+            if (productoExistente == null) {
+                return ResponseEntity.status(404).body("Producto no encontrado");
+            }
+
+            productoExistente.setNombre(producto.getNombre());
+            productoExistente.setDescripcion(producto.getDescripcion());
+            productoExistente.setPrecio(producto.getPrecio());
+            productoExistente.setCategoria_id(producto.getCategoria_id());
+            productoExistente.setProveedor_id(producto.getProveedor_id());
+            productoExistente.setEcoscore(producto.getEcoscore());
+            productoExistente.setActivo(producto.getActivo());
+
+            ps.guardarProd(productoExistente);
+            return ResponseEntity.ok("Producto actualizado con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al actualizar producto");
         }
-
-        productoExistente.setNombre(producto.getNombre());
-        productoExistente.setDescripcion(producto.getDescripcion());
-        productoExistente.setPrecio(producto.getPrecio());
-        productoExistente.setCategoria_id(producto.getCategoria_id());
-        productoExistente.setProveedor_id(producto.getProveedor_id());
-        productoExistente.setEcoscore(producto.getEcoscore());
-        productoExistente.setActivo(producto.getActivo());
-
-        ps.guardarProd(productoExistente);
-        return ResponseEntity.ok("Producto actualizado con éxito");
-    } catch (Exception e) {
-        return ResponseEntity.status(500).body("Error al actualizar producto");
     }
-}
 
-private final ProductoFakerService productoFakerService;
+    private final ProductoFakerService productoFakerService;
 
     public ProductoController(ProductoFakerService productoFakerService) {
         this.productoFakerService = productoFakerService;
@@ -133,5 +123,4 @@ private final ProductoFakerService productoFakerService;
         return ResponseEntity.status(201).body(productos);
     }
 
-    
 }

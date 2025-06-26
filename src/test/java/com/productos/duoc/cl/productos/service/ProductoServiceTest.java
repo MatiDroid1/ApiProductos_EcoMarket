@@ -34,7 +34,7 @@ public class ProductoServiceTest {
     public void testGuardarProd() {
         // Arrange (preparo los datos)
         Producto prod = new Producto();
-        prod.setNombre("palo bambu");
+        prod.setNombre("palo sas");
         prod.setDescripcion("es algo");
         prod.setPrecio(3000L);
         prod.setCategoria_id(1L);
@@ -49,7 +49,7 @@ public class ProductoServiceTest {
 
         // Assert (verifico los resultados)
         assertNotNull(prodGuardado);
-        assertEquals("palo bambu", prodGuardado.getNombre());
+        assertEquals("palo sas", prodGuardado.getNombre());
         assertEquals("es algo", prodGuardado.getDescripcion());
         assertEquals(3000L, prodGuardado.getPrecio());
         assertEquals("A", prodGuardado.getEcoscore());

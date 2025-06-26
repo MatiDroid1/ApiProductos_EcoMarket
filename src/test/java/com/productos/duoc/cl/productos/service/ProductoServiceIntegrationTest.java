@@ -31,7 +31,7 @@ public class ProductoServiceIntegrationTest {
     @Test
     public void testGuardarProductoEnBD() {
         Producto nuevoProd = new Producto();
-        nuevoProd.setNombre("Producto Test Real 2");
+        nuevoProd.setNombre("Producto Test Real 2 en sas");
         nuevoProd.setDescripcion("SAS");
         nuevoProd.setPrecio(9999L);
         nuevoProd.setCategoria_id(1L);
@@ -42,6 +42,6 @@ public class ProductoServiceIntegrationTest {
         Producto guardado = pService.guardarProd(nuevoProd);
 
         assertNotNull(guardado.getProductoId()); // Ya tiene ID generado
-        assertEquals("Producto Test Real 2", guardado.getNombre());
+        assertEquals("Producto Test Real 2 en sas", guardado.getNombre());
     }
 }
